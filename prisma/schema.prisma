@@ -1,0 +1,42 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id          Int       @id @default(autoincrement())
+  name        String    @unique
+  description String?
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  products    Product[]
+
+  @@map("categories")
+}
+
+model Product {
+  id                 Int       @id @default(autoincrement())
+  name               String
+  description        String?
+  sku                String    @unique
+  categoryId         Int?      @map("category_id")
+  supplierId         Int?      @map("supplier_id")
+  purchasePrice      Decimal?  @map("purchase_price") @db.Decimal(12, 2)
+  sellingPrice       Decimal   @map("selling_price") @db.Decimal(12, 2)
+  imageUrl           String?   @map("image_url")
+  lowStockThreshold  Int?      @default(0) @map("low_stock_threshold")
+  createdAt          DateTime  @default(now()) @map("created_at")
+  updatedAt          DateTime  @updatedAt @map("updated_at")
+  category           Category? @relation(fields: [categoryId], references: [id])
+  // supplier        Supplier? @relation(fields: [supplierId], references: [id]) // Define Supplier model
+  // inventoryItems  InventoryItem[]
+
+  @@map("products")
+}
+
+// ... define other models like Supplier, User, InventoryItem, StockMovement
