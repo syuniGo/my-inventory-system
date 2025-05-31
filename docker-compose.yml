@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  # Next.js 应用服务
+  next-app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev # 我们稍后会创建这个 Dockerfile
+    container_name: inventory_next_app
+    ports:
+      - "3000:3000" # 将容器的3000端口映射到主机的3000端口
+    volumes:
+      - .:/app # 将当前目录挂载到容器的 /app 目录，实现代码热更新
+      - /app/node_modules # 匿名卷，防止本地 node_modules 覆盖容器内的
+      - /app/.next # 匿名卷，用于 Next.js 的构建输出
+    environment:
+      - NODE_ENV=development
+      # PostgreSQL 连接信息 (稍后会用到)
+      - DATABASE_URL=postgresql://user:password@db:5432/inventory_db
+      # NextAuth.js (如果使用)
+      # - NEXTAUTH_URL=http://localhost:3000
+      # - NEXTAUTH_SECRET= # 在 .env.local 中设置一个随机字符串
+    depends_on:
+      - db # 确保 db 服务先启动
+    networks:
+      - inventory_network
+
+  # PostgreSQL 数据库服务
+  db:
+    image: postgres:15 # 您可以选择合适的 PostgreSQL 版本
+    container_name: inventory_postgres_db
+    ports:
+      - "5432:5432" # 将容器的5432端口映射到主机的5432端口 (方便本地工具连接)
+    environment:
+      POSTGRES_USER: user # 数据库用户名
+      POSTGRES_PASSWORD: password # 数据库密码
+      POSTGRES_DB: inventory_db # 数据库名称
+    volumes:
+      - postgres_data:/var/lib/postgresql/data # 持久化数据库数据
+    networks:
+      - inventory_network
+    restart: unless-stopped
+
+volumes:
+  postgres_data: # Docker 卷，用于持久化 PostgreSQL 数据
+
+networks:
+  inventory_network:
+    driver: bridge

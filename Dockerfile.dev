@@ -1,0 +1,27 @@
+# Dockerfile.dev
+FROM node:18-alpine AS base
+
+# 设置工作目录
+WORKDIR /app
+
+# 复制 package.json 和锁文件
+COPY package.json ./
+# 如果使用 npm 或 pnpm，则复制对应的锁文件
+# COPY package-lock.json ./
+# COPY pnpm-lock.yaml ./
+
+# 安装依赖
+# RUN yarn install --frozen-lockfile
+RUN npm install
+# RUN pnpm install --frozen-lockfile
+
+# 将所有项目文件复制到工作目录
+COPY . .
+
+# 暴露 Next.js 开发服务器端口
+EXPOSE 3000
+
+# 默认启动命令
+CMD ["npm", "run", "dev"]
+# CMD ["yarn", "dev"]
+# CMD ["pnpm", "dev"]
