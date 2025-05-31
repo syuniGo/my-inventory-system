@@ -5,7 +5,7 @@ services:
   next-app:
     build:
       context: .
-      dockerfile: Dockerfile.dev # 我们稍后会创建这个 Dockerfile
+      dockerfile: Dockerfile.dev
     container_name: inventory_next_app
     ports:
       - "3000:3000" # 将容器的3000端口映射到主机的3000端口
@@ -15,22 +15,22 @@ services:
       - /app/.next # 匿名卷，用于 Next.js 的构建输出
     environment:
       - NODE_ENV=development
-      # PostgreSQL 连接信息 (稍后会用到)
+      # PostgreSQL 连接信息
       - DATABASE_URL=postgresql://user:password@db:5432/inventory_db
-      # NextAuth.js (如果使用)
-      # - NEXTAUTH_URL=http://localhost:3000
-      # - NEXTAUTH_SECRET= # 在 .env.local 中设置一个随机字符串
+      # 确保Material UI依赖安装
+      - FORCE_INSTALL_MUI=true
     depends_on:
       - db # 确保 db 服务先启动
     networks:
       - inventory_network
+    restart: unless-stopped
 
   # PostgreSQL 数据库服务
   db:
-    image: postgres:15 # 您可以选择合适的 PostgreSQL 版本
+    image: postgres:15
     container_name: inventory_postgres_db
-    # ports:
-    #   - "5432:5432" 
+    ports:
+      - "15432:5432" # 使用15432端口避免冲突
     environment:
       POSTGRES_USER: user # 数据库用户名
       POSTGRES_PASSWORD: password # 数据库密码

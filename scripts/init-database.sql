@@ -1,5 +1,5 @@
--- 完整数据库初始化脚本
--- 这个脚本会在PostgreSQL容器启动时自动执行
+-- 初始化数据库脚本
+-- scripts/init-database.sql
 
 -- 删除现有表（如果存在）
 DROP TABLE IF EXISTS stock_movements CASCADE;
@@ -112,12 +112,11 @@ INSERT INTO categories (name, description) VALUES
 ('办公用品', '办公室日常用品'),
 ('家具', '办公和家用家具');
 
--- 插入初始用户数据
--- 密码哈希对应: admin/admin, manager/manager, user1/user1
+-- 插入初始用户数据（密码已哈希）
 INSERT INTO users (username, email, password_hash, role, first_name, last_name) VALUES
-('admin', 'admin@inventory.com', '$2b$10$K7L/8Y1t85rCGkVwKzdrAOKWYfTvx5n8HI8KRZ6yGXxKzJQrJ5.Iq', 'ADMIN', 'Admin', 'User'),
-('manager', 'manager@inventory.com', '$2b$10$K7L/8Y1t85rCGkVwKzdrAOKWYfTvx5n8HI8KRZ6yGXxKzJQrJ5.Iq', 'MANAGER', 'Manager', 'User'),
-('user1', 'user1@inventory.com', '$2b$10$K7L/8Y1t85rCGkVwKzdrAOKWYfTvx5n8HI8KRZ6yGXxKzJQrJ5.Iq', 'USER', 'Regular', 'User');
+('admin', 'admin@inventory.com', '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'ADMIN', 'Admin', 'User'),
+('manager', 'manager@inventory.com', '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'MANAGER', 'Manager', 'User'),
+('user1', 'user1@inventory.com', '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'USER', 'Regular', 'User');
 
 -- 插入初始供应商数据
 INSERT INTO suppliers (name, contact_person, phone, email, address) VALUES
@@ -147,5 +146,4 @@ INSERT INTO stock_movements (product_id, inventory_item_id, user_id, type, quant
 -- 更新库存数量（减去销售的10个）
 UPDATE inventory_items SET quantity = 40 WHERE id = 1;
 
--- 显示创建结果
-SELECT 'Database initialization completed successfully!' as status;
+COMMIT; 
